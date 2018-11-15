@@ -223,6 +223,7 @@ export default class Canvas extends Component {
           <img class = "animation" id = "vertical" src="vertical.svg" alt=""onClick={this.handleAnimateSelect}/>
           <img className = "App-logo" id = "App-logo" src="clockwise.svg" alt=""onClick={this.handleAnimateSelect}/>
           <text> <br></br> </text>
+          </div>
       </div>
     )
 
