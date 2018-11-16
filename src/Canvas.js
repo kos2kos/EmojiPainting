@@ -76,7 +76,7 @@ export default class Canvas extends Component {
       if(this.state.percentage % 2 === 0){
         // console.log("IMAGES STATE", this.state.imagesArr);
         this.setState({imagesArr: [...this.state.imagesArr,[this.state.imgPNG, event.clientX, event.clientY]]}, () => {
-            console.log("IMAGES STATE", this.state.imagesArr);
+            this.drawImages();
           })
         // this.drawImageStroke(event.clientX, event.clientY, this.state.imgPNG,
         //   this.state.emoji.animation)
@@ -85,7 +85,7 @@ export default class Canvas extends Component {
   }
 
   animateHorizontal = (event) => {
-    requestAnimationFrame(this.animateHorizontal)
+    // requestAnimationFrame(this.animateHorizontal)
     this.state.ctx.fillStyle = 'purple';
     this.state.ctx.clearRect(0,0, 955,600)
 
@@ -114,10 +114,13 @@ export default class Canvas extends Component {
     let images = this.state.imagesArr
 
     for(let i = 0; i < images.length; i++){
+
       console.log("drawing image", images[i]);
-      const def = document.createElement("img")
-      def.src = images[0]
-      this.state.ctx.drawImage(def, images[i][1], images[i][2])
+      // const def = document.createElement("img")
+      // def.src = images[0]
+      // this.state.ctx.drawImage(def, images[i][1], images[i][2])
+      this.drawImageStroke(images[i][1], images[i][2], images[i][0],
+        this.state.emoji.animation)
     }
   }
 
@@ -128,7 +131,7 @@ export default class Canvas extends Component {
     const def = document.createElement("img")
     def.src = "1.png"
     this.state.ctx.drawImage(def, 300,300)
-    // this.drawImages()
+    this.drawImages()
 
     if (this.state.y > this.state.c_height ){
       this.setState({dy: -4, y: this.state.y + this.state.dy})
