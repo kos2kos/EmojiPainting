@@ -6,6 +6,7 @@ export default class Canvas extends Component {
     super()
     this.state = {
       imgPNG: "http://localhost:3000/1.png",
+      imagesArr: [],
       text: "Hey now",
       mouseDown: false,
       percentage: 1,
@@ -46,7 +47,7 @@ export default class Canvas extends Component {
   }
 
   handleAnimateSelect = (event) => {
-    console.log(event.target.id);
+    console.log("ANIMATE_SELECT",event.target.id);
     this.setState({emoji: {animation: event.target.id}},() => {
     })
   }
@@ -73,8 +74,12 @@ export default class Canvas extends Component {
     this.percentageIncrease()
     if (this.state.mouseDown){
       if(this.state.percentage % 2 === 0){
-        drawImageAtCoords(event.clientX, event.clientY, this.state.imgPNG,
-          this.state.emoji.animation)
+        // console.log("IMAGES STATE", this.state.imagesArr);
+        this.setState({imagesArr: [...this.state.imagesArr,[this.state.imgPNG, event.clientX, event.clientY]]}, () => {
+            console.log("IMAGES STATE", this.state.imagesArr);
+          })
+        // this.drawImageStroke(event.clientX, event.clientY, this.state.imgPNG,
+        //   this.state.emoji.animation)
       }
     }
   }
@@ -104,13 +109,26 @@ export default class Canvas extends Component {
 
   }
 
+  drawImages = () => {
+    console.log("Draw Images", this.state.imagesArr);
+    let images = this.state.imagesArr
+
+    for(let i = 0; i < images.length; i++){
+      console.log("drawing image", images[i]);
+      const def = document.createElement("img")
+      def.src = images[0]
+      this.state.ctx.drawImage(def, images[i][1], images[i][2])
+    }
+  }
+
   animateVertical = (event) => {
     requestAnimationFrame(this.animateVertical)
     this.state.ctx.fillStyle = 'purple';
     this.state.ctx.clearRect(0,0, 955,600)
     const def = document.createElement("img")
     def.src = "1.png"
-    this.state.ctx.drawImage(def, 200,200)
+    this.state.ctx.drawImage(def, 300,300)
+    // this.drawImages()
 
     if (this.state.y > this.state.c_height ){
       this.setState({dy: -4, y: this.state.y + this.state.dy})
@@ -125,6 +143,34 @@ export default class Canvas extends Component {
       this.state.ctx.drawImage(def, 10, this.state.y + this.state.dy)
     })
 
+  }
+
+  drawImageStroke = (x, y, imgPNG, animation) =>{
+    let colors = []
+    let def = null
+    let idx = 0
+    let [sizeX, sizeY] = [95, 121]
+    def = document.createElement("img")
+    def.src = imgPNG
+
+    console.log("drawing");
+    const canvas = document.querySelector("canvas")
+    const ctx = canvas.getContext("2d")
+    const rect = canvas.getBoundingClientRect()
+    const [cX, cY] = [rect.left, rect.top]
+
+    let img
+    if (false) {
+      img = colors[idx]
+      idx = (idx + 1) % 3
+    } else {
+      def.src = imgPNG
+      def.className = "App-logo"
+      console.log(def);
+      img = def
+    }
+
+    this.state.ctx.drawImage(img, x - cX - 50, y - cY - 80, sizeX, sizeY)
   }
 
   componentDidMount() {
