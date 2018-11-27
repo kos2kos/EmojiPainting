@@ -10,6 +10,8 @@ export default class Canvas extends Component {
       text: "Hey now",
       mouseDown: false,
       percentage: 1,
+      frameNumerator: 2,
+      frameDenomenator: 3,
       emoji: {
         animation: ""
       },
@@ -17,7 +19,7 @@ export default class Canvas extends Component {
       x: 0,
       y: 0,
       dx: 4,
-      dy: 4,
+      dy: 1.2,
       c_width: 860,
       c_height: 500,
     }
@@ -27,6 +29,15 @@ export default class Canvas extends Component {
   percentageIncrease = () => {
     this.setState(prevState => {
       return {percentage: prevState.percentage + 1}
+    })
+  }
+
+  frameIncrease = () => {
+    this.setState(prevState => {
+      return {frameNumerator: prevState.frameCount + 1}
+    })
+    this.setState(prevState => {
+      return {frameDenomenator: prevState.frameCount + 1}
     })
   }
 
@@ -76,7 +87,7 @@ export default class Canvas extends Component {
       if(this.state.percentage % 2 === 0){
         // console.log("IMAGES STATE", this.state.imagesArr);
         this.setState({imagesArr: [...this.state.imagesArr,[this.state.imgPNG, event.clientX, event.clientY]]}, () => {
-            this.drawImages();
+            // this.drawImages();
           })
         // this.drawImageStroke(event.clientX, event.clientY, this.state.imgPNG,
         //   this.state.emoji.animation)
@@ -110,29 +121,19 @@ export default class Canvas extends Component {
   }
 
   drawImages = () => {
-    console.log("Draw Images", this.state.imagesArr);
     let images = this.state.imagesArr
-
     for(let i = 0; i < images.length; i++){
-
-      console.log("drawing image", images[i]);
-      // const def = document.createElement("img")
-      // def.src = images[0]
-      // this.state.ctx.drawImage(def, images[i][1], images[i][2])
-      this.drawImageStroke(images[i][1], images[i][2], images[i][0],
-        this.state.emoji.animation)
+      console.log("dy :", images[i][2] + this.state.dy, images[i][0]);
+      images[i][2] = images[i][2] + this.state.dy
+      this.setState({imagesArr: images}, () => {
+        this.drawImageStroke(images[i][1], images[i][2], images[i][0],
+          this.state.emoji.animation)
+      })
     }
   }
 
-  animateVertical = (event) => {
-    requestAnimationFrame(this.animateVertical)
-    this.state.ctx.fillStyle = 'purple';
-    this.state.ctx.clearRect(0,0, 955,600)
-    const def = document.createElement("img")
-    def.src = "1.png"
-    this.state.ctx.drawImage(def, 300,300)
-    this.drawImages()
-
+  animateImage = () => {
+    let images = this.state.imagesArr
     if (this.state.y > this.state.c_height ){
       this.setState({dy: -4, y: this.state.y + this.state.dy})
     }
@@ -141,12 +142,38 @@ export default class Canvas extends Component {
       this.setState({dy: 4, y: this.state.y + this.state.dy})
     }
 
+    for (let i = 0; i < images.length; i++){
+
+      this.drawImageStroke(images[i][1], images[i][2] + this.state.dy, images[i][0],
+        this.state.emoji.animation)
+    }
+  }
+
+  animateVertical = (event) => {
+    requestAnimationFrame(this.animateVertical)
+   // this.state.ctx.fillStyle = 'purple';
+   //  this.state.ctx.clearRect(0,0, 955,600)
+    const def = document.createElement("img")
+    def.src = "1.png"
+    // this.state.ctx.drawImage(def, 300,300)
+
+    if (this.state.y > this.state.c_height ){
+      this.setState({dy: -4, y: this.state.y + this.state.dy})
+    }
+
+    if (this.state.y < 0 ){
+      this.setState({dy: 4, y: this.state.y + this.state.dy})
+    }
+    this.drawImages()
+
     this.setState({y: this.state.y + this.state.dy}, () => {
-      this.state.ctx.fillRect(this.state.y + this.state.dy, 10, 100, 100)
-      this.state.ctx.drawImage(def, 10, this.state.y + this.state.dy)
+      // this.state.ctx.fillRect(this.state.y + this.state.dy, 10, 100, 100)
+      // this.state.ctx.drawImage(def, 10, this.state.y + this.state.dy)
     })
 
   }
+
+
 
   drawImageStroke = (x, y, imgPNG, animation) =>{
     let colors = []
