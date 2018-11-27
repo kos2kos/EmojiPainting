@@ -35,6 +35,10 @@ img{
   height: 80px;
 }
 
+.clockwise{
+  height: 35px;
+}
+
 
 @keyframes clockwise {
   from { transform: rotate(0deg); }

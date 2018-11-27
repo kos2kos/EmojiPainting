@@ -59,8 +59,7 @@ export default class Canvas extends Component {
 
   handleAnimateSelect = (event) => {
     console.log("ANIMATE_SELECT",event.target.id);
-    this.setState({emoji: {animation: event.target.id}},() => {
-    })
+    this.setState({emoji: {animation: event.target.id}})
   }
 
   percentageReset = () =>{
@@ -86,9 +85,8 @@ export default class Canvas extends Component {
     if (this.state.mouseDown){
       if(this.state.percentage % 2 === 0){
         // console.log("IMAGES STATE", this.state.imagesArr);
-        this.setState({imagesArr: [...this.state.imagesArr,[this.state.imgPNG, event.clientX, event.clientY]]}, () => {
-            // this.drawImages();
-          })
+        this.setState({imagesArr: [...this.state.imagesArr,{imgName: this.state.imgPNG, x: event.clientX, y: event.clientY, initialX: event.clientX, initialY: event.clientY, animation: this.state.emoji.animation}]})
+
         // this.drawImageStroke(event.clientX, event.clientY, this.state.imgPNG,
         //   this.state.emoji.animation)
       }
@@ -123,36 +121,38 @@ export default class Canvas extends Component {
   drawImages = () => {
     let images = this.state.imagesArr
     for(let i = 0; i < images.length; i++){
-      console.log("dy :", images[i][2] + this.state.dy, images[i][0]);
-      images[i][2] = images[i][2] + this.state.dy
-      this.setState({imagesArr: images}, () => {
-        this.drawImageStroke(images[i][1], images[i][2], images[i][0],
-          this.state.emoji.animation)
-      })
+      if (this.images[i].animation === "vertical"){
+        image = animateImageVertical(images[i])
+      }
+      if (this.images[i].animation === "horizontal"){
+        image = animateImageHoriztonal(images[i])
+      }
+      this.drawImageStroke(images[i].x, images[i].y, images[i].imgName,
+        images.animation)
     }
   }
 
-  animateImage = () => {
-    let images = this.state.imagesArr
-    if (this.state.y > this.state.c_height ){
-      this.setState({dy: -4, y: this.state.y + this.state.dy})
+  animateImageVertical = (image) => {
+    if (image.y + 10 > image.initialX ){
+      this.setState({dy: -1.2}, () => {
+          image.y = image.y + this.state.dy
+      })
+    } else if (image.y - 10 < image.initialX) {
+      this.setState({dy: 1.2}, () => {
+        image.y = image.y + this.state.dy
+      })
     }
+    return image
+  }
 
-    if (this.state.y < 0 ){
-      this.setState({dy: 4, y: this.state.y + this.state.dy})
-    }
+  animateImageHoriztonal = () => {
 
-    for (let i = 0; i < images.length; i++){
-
-      this.drawImageStroke(images[i][1], images[i][2] + this.state.dy, images[i][0],
-        this.state.emoji.animation)
-    }
   }
 
   animateVertical = (event) => {
     requestAnimationFrame(this.animateVertical)
    // this.state.ctx.fillStyle = 'purple';
-   //  this.state.ctx.clearRect(0,0, 955,600)
+    this.state.ctx.clearRect(0,0, 955,600)
     const def = document.createElement("img")
     def.src = "1.png"
     // this.state.ctx.drawImage(def, 300,300)
@@ -200,7 +200,7 @@ export default class Canvas extends Component {
       img = def
     }
 
-    this.state.ctx.drawImage(img, x - cX - 50, y - cY - 80, sizeX, sizeY)
+    this.state.ctx.drawImage(img, x - cX - 50, y - cY - 80, sizeX , sizeY)
   }
 
   componentDidMount() {
@@ -296,8 +296,8 @@ export default class Canvas extends Component {
           <text> <br></br> </text>
 
           <img class = "animation" id = "horizontal" src="horizontal.svg" alt=""onClick={this.handleAnimateSelect}/>
-          <img class = "animation" id = "vertical" src="vertical.svg" alt=""onClick={this.handleAnimateSelect}/>
-          <img className = "App-logo" id = "App-logo" src="clockwise.svg" alt=""onClick={this.handleAnimateSelect}/>
+          <img class = "vertical" id = "vertical" src="vertical.svg" alt=""onClick={this.handleAnimateSelect}/>
+          <img className = "clockwise" id = "App-logo" src="clockwise.svg" alt=""onClick={this.handleAnimateSelect}/>
           <text> <br></br> </text>
           </div>
       </div>
