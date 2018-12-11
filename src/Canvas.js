@@ -87,8 +87,8 @@ export default class Canvas extends Component {
         // console.log("IMAGES STATE", this.state.imagesArr);
         this.setState({imagesArr: [...this.state.imagesArr,{imgName: this.state.imgPNG, x: event.clientX, y: event.clientY, initialX: event.clientX, initialY: event.clientY, animation: this.state.emoji.animation}]})
 
-        // this.drawImageStroke(event.clientX, event.clientY, this.state.imgPNG,
-        //   this.state.emoji.animation)
+        drawImageAtCoords(event.clientX, event.clientY, this.state.imgPNG,
+          this.state.emoji.animation)
       }
     }
   }
@@ -121,14 +121,28 @@ export default class Canvas extends Component {
   drawImages = () => {
     let images = this.state.imagesArr
     for(let i = 0; i < images.length; i++){
-      if (this.images[i].animation === "vertical"){
-        image = animateImageVertical(images[i])
+      // console.log("dy :", images[i][2] + this.state.dy, images[i][0]);
+      // images[i][2] = images[i][2] + this.state.dy
+      // this.setState({imagesArr: images}, () => {
+
+      // })
+      console.log("IMAGE-I", images[i].x)
+      if (images[i].animation === "vertical"){
+        images[i] = this.animateImageVertical(images[i])
+      } else if (images[i].animation === "horizontal") {
+          images[i] = this.animateImageHoriztonal(images[i])
       }
-      if (this.images[i].animation === "horizontal"){
-        image = animateImageHoriztonal(images[i])
+
+      if (images[i].animation === "vertical"){
+        images[i] = this.animateImageHoriztonal(images[i])
+        this.setState({imagesArr: images}, () => {
+          this.drawImageStroke(images[i].x, images[i].y, images[i].imgName,
+            images.animation)
+        })
+      } else {
+        this.drawImageStroke(images[i].x, images[i].y, images[i].imgName,
+          images.animation)
       }
-      this.drawImageStroke(images[i].x, images[i].y, images[i].imgName,
-        images.animation)
     }
   }
 
@@ -145,9 +159,7 @@ export default class Canvas extends Component {
     return image
   }
 
-  animateImageHoriztonal = () => {
 
-  }
 
   animateVertical = (event) => {
     requestAnimationFrame(this.animateVertical)
@@ -207,7 +219,7 @@ export default class Canvas extends Component {
     const canvas = this.refs.canvas
     const plane = canvas.getContext("2d")
     this.setState({ctx: plane}, () => {
-      this.animateVertical()
+      // this.animateVertical()
     })
   }
 
